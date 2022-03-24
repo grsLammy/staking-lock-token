@@ -54,7 +54,9 @@ describe("MockTokenERC20.sol", async () => {
 
     it("The owner should be able to mint more tokens and store it in the token contract", async() => {
         const addOneEther = ethers.utils.parseEther("1");
-        await owner.mockToken.mintERC20(mockToken.address, addOneEther);
+        await expect(owner.mockToken.mintERC20(mockToken.address, addOneEther)).to.not.revertedWith(
+            "Ownable: caller is not the owner"
+        );
         const balance = ethers.utils.parseEther("1000000001");
         const balanceInContract = await mockToken.totalSupply();
         expect(balanceInContract).to.be.eq(balance);
@@ -62,7 +64,9 @@ describe("MockTokenERC20.sol", async () => {
 
     it("The owner should be able to mint more tokens directly to owner address", async() => {
         const addOneEther = ethers.utils.parseEther("1");
-        await owner.mockToken.mintERC20(owner.address, addOneEther);
+        await expect(owner.mockToken.mintERC20(owner.address, addOneEther)).to.not.revertedWith(
+            "Ownable: caller is not the owner"
+        );
         const balance = ethers.utils.parseEther("1000000001");
         const balanceOfOwner = await mockToken.balanceOf(owner.address);
         expect(balanceOfOwner).to.be.eq(balance);
