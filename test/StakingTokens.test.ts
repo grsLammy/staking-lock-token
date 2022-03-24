@@ -158,5 +158,103 @@ describe("StakingTokens.sol", async() => {
         )
     })
 
+    it("Smart Contract: Unpaused", async() => {
+        await owner.stakingTokens.unpause()
+        let unPaused = await stakingTokens.paused()
+        expect(unPaused).to.be.eq(false);
+    })
+
+    it("Users can unstake: ERC20 tokens", async() => {
+
+        // Balance of user1 before staking
+        const balanceOfUserBeforeStake = await tokenERC20.balanceOf(user1.address);
+
+        // Staking amount for user1
+        const stakingAmount = BigNumber.from(ethers.utils.parseEther("100"));
+
+        // Approve for user1 to stake all of his ERC20 token
+        await user1.tokenERC20.approve(stakingTokens.address, stakingAmount);
+
+        // Stake all avaliable ERC20 token for the user1
+        await user1.stakingTokens.stakeERC20Tokens(stakingAmount);
+
+        // Balance of user1 after staking
+        const balanceOfUserAfterStake = await tokenERC20.balanceOf(user1.address);
+
+        // Check that the amount is equal to 0 after staking
+        expect(balanceOfUserAfterStake).to.be.eq(balanceOfUserBeforeStake.sub(stakingAmount))
+
+        // unpause the smart contract
+        await owner.stakingTokens.unpause()
+        // unstake the tokens
+        await expect(user1.stakingTokens.unstakeERC20Tokens()).to.not.revertedWith(
+            "Pausable: paused"
+        )
+
+        const balanceAfterUnstake = await tokenERC20.balanceOf(user1.address);
+        expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
+    })
+
+    it("User can unstake: ERC1155 token ID 1", async() => {
+        
+        // Balance of user1 before staking
+        const balanceOfUserBeforeStake = await tokenERC1155.balanceOf(user1.address, 1);
+
+        // Staking amount for user1
+        const stakingAmount = BigNumber.from(ethers.utils.parseEther("100"));
+
+        // Approve for user1 to stake all of his ERC1155 token id 1
+        await user1.tokenERC1155.setApprovalForAll(stakingTokens.address, true);
+
+        // Stake all avaliable ERC1155 token id 1 for the user 1
+        await user1.stakingTokens.stakeERC1155Tokens(1, stakingAmount);
+
+        // Balance of user1 after staking
+        const balanceOfUserAfterStake = await tokenERC1155.balanceOf(user1.address, 1);
+
+        // Check that the amount is equal to 0 of token id 1 after staking
+        expect(balanceOfUserAfterStake).to.be.eq(balanceOfUserBeforeStake.sub(stakingAmount));
+
+        // unpause the smart contract
+        await owner.stakingTokens.unpause()
+        // unstake the tokens
+        await expect(user1.stakingTokens.unstakeERC1155Tokens(1)).to.not.revertedWith(
+            "Pausable: paused"
+        )
+
+        const balanceAfterUnstake = await tokenERC1155.balanceOf(user1.address, 1);
+        expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
+    })
+
+    it("User can unstake: ERC1155 token ID 2", async() => {
+        
+        // Balance of user1 before staking
+        const balanceOfUserBeforeStake = await tokenERC1155.balanceOf(user1.address, 2);
+
+        // Staking amount for user1
+        const stakingAmount = 1;
+
+        // Approve for user1 to stake all of his ERC1155 token id 2
+        await user1.tokenERC1155.setApprovalForAll(stakingTokens.address, true);
+
+        // Stake all avaliable ERC1155 token id 1 for the user 2
+        await user1.stakingTokens.stakeERC1155Tokens(2, stakingAmount);
+
+        // Balance of user1 after staking
+        const balanceOfUserAfterStake = await tokenERC1155.balanceOf(user1.address, 2);
+
+        // Check that the amount is equal to 0 of token id 1 after staking
+        expect(balanceOfUserAfterStake).to.be.eq(balanceOfUserBeforeStake.sub(stakingAmount));
+
+        // unpause the smart contract
+        await owner.stakingTokens.unpause()
+        // unstake the tokens
+        await expect(user1.stakingTokens.unstakeERC1155Tokens(2)).to.not.revertedWith(
+            "Pausable: paused"
+        )
+        
+        const balanceAfterUnstake = await tokenERC1155.balanceOf(user1.address, 2);
+        expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
+    })
 
 })
