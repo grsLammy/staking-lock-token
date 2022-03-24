@@ -16,6 +16,9 @@ const config: HardhatUserConfig = {
             gas: 4612388,
         },
     },
+	etherscan: {
+        apiKey: process.env.EXPLORER_API_KEY || "",
+    },
 };
 
 export default config;
