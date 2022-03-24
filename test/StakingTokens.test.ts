@@ -44,7 +44,7 @@ describe("StakingTokens.sol", async() => {
         await owner.tokenERC1155.mintBatchMockERC1155(user1.address, [1,2], [balance, 1], []);
     });
 
-    it("The owner should some tokens to test", async() => {
+    it("The owner should have some tokens to test", async() => {
         // Check if the owner has 1 billion ERC20 tokens
         const balanceOfOwner = await tokenERC20.balanceOf(owner.address);
         const balance = BigNumber.from(ethers.utils.parseEther("1000000000"));
@@ -72,7 +72,7 @@ describe("StakingTokens.sol", async() => {
         expect(await tokenERC1155.balanceOf(user1.address, 2)).to.be.eq(1);
     })
 
-    it("The user should be able to stake some ERC20 tokens", async() => {
+    it("User can stake: ERC20 tokens", async() => {
 
         // Balance of user1 before staking
         const balanceOfUserBeforeStake = await tokenERC20.balanceOf(user1.address);
@@ -93,17 +93,70 @@ describe("StakingTokens.sol", async() => {
         expect(balanceOfUserAfterStake).to.be.eq(balanceOfUserBeforeStake.sub(stakingAmount))
     })
 
-    it("The smart contract should be paused so that the user cannot withdraw his tokens", async() => {
+    it("User can stake: ERC1155 token ID 1", async() => {
+        
+        // Balance of user1 before staking
+        const balanceOfUserBeforeStake = await tokenERC1155.balanceOf(user1.address, 1);
+
+        // Staking amount for user1
+        const stakingAmount = BigNumber.from(ethers.utils.parseEther("100"));
+
+        // Approve for user1 to stake all of his ERC1155 token id 1
+        await user1.tokenERC1155.setApprovalForAll(stakingTokens.address, true);
+
+        // Stake all avaliable ERC1155 token id 1 for the user 1
+        await user1.stakingTokens.stakeERC1155Tokens(1, stakingAmount);
+
+        // Balance of user1 after staking
+        const balanceOfUserAfterStake = await tokenERC1155.balanceOf(user1.address, 1);
+
+        // Check that the amount is equal to 0 of token id 1 after staking
+        expect(balanceOfUserAfterStake).to.be.eq(balanceOfUserBeforeStake.sub(stakingAmount));
+    })
+
+    it("User can stake: ERC1155 token ID 2", async() => {
+        
+        // Balance of user1 before staking
+        const balanceOfUserBeforeStake = await tokenERC1155.balanceOf(user1.address, 2);
+
+        // Staking amount for user1
+        const stakingAmount = 1;
+
+        // Approve for user1 to stake all of his ERC1155 token id 2
+        await user1.tokenERC1155.setApprovalForAll(stakingTokens.address, true);
+
+        // Stake all avaliable ERC1155 token id 1 for the user 2
+        await user1.stakingTokens.stakeERC1155Tokens(2, stakingAmount);
+
+        // Balance of user1 after staking
+        const balanceOfUserAfterStake = await tokenERC1155.balanceOf(user1.address, 2);
+
+        // Check that the amount is equal to 0 of token id 1 after staking
+        expect(balanceOfUserAfterStake).to.be.eq(balanceOfUserBeforeStake.sub(stakingAmount));
+    })
+
+    it("Smart Contract: Paused (users can't unstake)", async() => {
         let isPaused = await stakingTokens.paused()
         expect(isPaused).to.be.eq(true);
     })
 
-    it("The user cannot withdraw his ERC20 Tokens", async() => {
+    it("Users can't unstake: ERC20 tokens", async() => {
         await expect(user1.stakingTokens.unstakeERC20Tokens()).to.be.revertedWith(
             "Pausable: paused"
         )
     })
 
+    it("Users can't unstake: ERC1155 token ID 1", async() => {
+        await expect(user1.stakingTokens.unstakeERC1155Tokens(1)).to.be.revertedWith(
+            "Pausable: paused"
+        )
+    })
+
+    it("Users can't unstake: ERC1155 token ID 2", async() => {
+        await expect(user1.stakingTokens.unstakeERC1155Tokens(2)).to.be.revertedWith(
+            "Pausable: paused"
+        )
+    })
 
 
 })
