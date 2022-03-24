@@ -56,6 +56,7 @@ describe("StakingTokens.sol", async() => {
 
         // Check if the owner has 1 token (NFT) of token id 2
         const balanceOfToken2 = await tokenERC1155.balanceOf(owner.address, 2);
+        // Check if the balance of token id 2 of owner is 1
         expect(balanceOfToken2).to.be.eq(1);
     })
 
@@ -136,31 +137,40 @@ describe("StakingTokens.sol", async() => {
     })
 
     it("Smart Contract: Paused (users can't unstake)", async() => {
+        // Store the status of paused in bool
+        // The smart contract is paused(true) by default
         let isPaused = await stakingTokens.paused()
+        // Check if the smart contract is paused
         expect(isPaused).to.be.eq(true);
     })
 
     it("Users can't unstake: ERC20 tokens", async() => {
+        // Check if the user can unstake
         await expect(user1.stakingTokens.unstakeERC20Tokens()).to.be.revertedWith(
             "Pausable: paused"
         )
     })
 
     it("Users can't unstake: ERC1155 token ID 1", async() => {
+        // Check if the user can unstake
         await expect(user1.stakingTokens.unstakeERC1155Tokens(1)).to.be.revertedWith(
             "Pausable: paused"
         )
     })
 
     it("Users can't unstake: ERC1155 token ID 2", async() => {
+        // Check if the user can unstake
         await expect(user1.stakingTokens.unstakeERC1155Tokens(2)).to.be.revertedWith(
             "Pausable: paused"
         )
     })
 
     it("Smart Contract: Unpaused", async() => {
+        // Unpause the smart contract
         await owner.stakingTokens.unpause()
+        // Store the status of paused in bool
         let unPaused = await stakingTokens.paused()
+        // Check if the smart contract is paused
         expect(unPaused).to.be.eq(false);
     })
 
@@ -191,7 +201,9 @@ describe("StakingTokens.sol", async() => {
             "Pausable: paused"
         )
 
+        // Balance of user account after unstaking
         const balanceAfterUnstake = await tokenERC20.balanceOf(user1.address);
+        // Compare if the balance of user before staking is equal to balance after unstaking
         expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
     })
 
@@ -222,7 +234,9 @@ describe("StakingTokens.sol", async() => {
             "Pausable: paused"
         )
 
+        // Balance of user account after unstaking
         const balanceAfterUnstake = await tokenERC1155.balanceOf(user1.address, 1);
+        // Compare if the balance of user before staking is equal to balance after unstaking
         expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
     })
 
@@ -253,7 +267,9 @@ describe("StakingTokens.sol", async() => {
             "Pausable: paused"
         )
         
+        // Balance of user account after unstaking
         const balanceAfterUnstake = await tokenERC1155.balanceOf(user1.address, 2);
+        // Compare if the balance of user before staking is equal to balance after unstaking
         expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
     })
 
