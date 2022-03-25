@@ -272,5 +272,4 @@ describe("StakingTokens.sol", async() => {
         // Compare if the balance of user before staking is equal to balance after unstaking
         expect(balanceAfterUnstake).to.be.eq(balanceOfUserBeforeStake);
     })
-
 })
