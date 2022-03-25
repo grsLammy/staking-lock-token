@@ -12,12 +12,14 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
 
     using Address for address;
 
+    // Address of the token smart contracts
     address public mockTokenERC20Address;
     address public mockTokenERC1155Address;
 
     // Address of the users who are currently staking
     address [] public stakers;
 
+    // MAPPINGS
 
     // Stores staking balance of ERC20 token of an account address
     mapping(address => uint256) public stakingBalanceERC20;
@@ -37,24 +39,39 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
     // Stores true if the account is currently staking ERC1155 tokens at present else stores false
     mapping(address => bool) public userIsStakingERC1155;
 
-    event StakeTokens(
+    // EVENTS
+
+    // Event for staking ERC20 tokens
+    event StakeERC20Tokens(
         address indexed _from,
         address indexed _to,
         uint256 indexed _amount
     );
 
-    event UnstakeTokens(
+    // Event for unstaking ERC20 tokens
+    event UnstakeERC20Tokens(
         address indexed _from,
         address indexed _to,
         uint256 indexed _amount
     );
 
+    // Event for staking ERC1155 tokens
+    event StakeERC1155Tokens(
+        address indexed _from,
+        address _to,
+        uint256 indexed _id,
+        uint256 indexed _amount
+    );
+
+    // Event for unstaking ERC1155 tokens
     event UnstakeERC1155Tokens(
         address _from,
         address indexed _to,
         uint256 indexed _id,
         uint256 indexed _amount
     );
+
+    // CONSTRUCTOR
 
     constructor(
         address _mockTokenERC20Address,
@@ -73,41 +90,58 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
 
         super._pause(); // Set the pause value to true 
 
+        // Assign the address of tokens smart contract
         mockTokenERC20Address = _mockTokenERC20Address;
         mockTokenERC1155Address = _mockTokenERC1155Address;
     }
 
+    // FUNCTION CALLS
+
+    // Function to pause the smart contract
     function pause() external onlyOwner {
+        // Function call (Pausable)
         super._pause();
     }
 
+    // Function to unpause the smart contract
     function unpause() external onlyOwner {
+        // Function call (Pausable)
         super._unpause();
     }
 
+    // Function to provoke staking for ERC20 tokens
     function stakeERC20Tokens(
         uint256 _stakingAmount
     ) external {
+        // Function call
         _stakeERC20Tokens(_stakingAmount);
     }
 
+    // Function to provoke unstaking for ERC20 tokens
     function unstakeERC20Tokens() external whenNotPaused {
+        // Function call
         _unstakeERC20Tokens();
     }
 
+    // Function to provoke staking for ERC1155 tokens
     function stakeERC1155Tokens(
         uint256 _id,
         uint256 _stakingAmount
     ) external {
+        // Function call
         _stakeERC1155Tokens(_id, _stakingAmount);
     }
 
+    // Function to provoke unstaking for ERC1155 tokens
     function unstakeERC1155Tokens(
         uint256 _id
     ) external whenNotPaused {
+        // Function call
         _unstakeERC1155Tokens(_id);
     }
 
+    // This function interface is called at the end of a 'safeTransferFrom'
+    // ERC1155TokenReciever interface to accept ERC1155 token transfers
     function onERC1155Received(
         address,
         address,
@@ -118,6 +152,9 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         return this.onERC1155Received.selector;
     }
 
+    // FUNCTION IMPLEMENTATION
+
+    // Function logic for staking ERC20 tokens
     function _stakeERC20Tokens(
         uint _stakingAmount
     ) private {
@@ -148,13 +185,15 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         userIsStakingERC20[msg.sender] = true;   // Set true for user is staking
         userHasStakedERC20[msg.sender] = true;   // Set true for user has staked
 
-        emit StakeTokens(
+        // Emit the event for staking ERC20 tokens
+        emit StakeERC20Tokens(
             msg.sender,
             address(this),
             _stakingAmount
         );
     }
 
+    // Function logic for unstaking ERC20 tokens
     function _unstakeERC20Tokens() private {
         // Stores the token amount of user account to balance
         uint256 balance = stakingBalanceERC20[msg.sender];
@@ -176,13 +215,15 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         // Set false for user is staking
         userIsStakingERC20[msg.sender] = false;
 
-        emit UnstakeTokens(
+        // Emit the event for unstaking ERC20 tokens
+        emit UnstakeERC20Tokens(
             address(this),
             msg.sender,
             balance
         );
     }
 
+    // Function logic for staking ERC1155 tokens
     function _stakeERC1155Tokens(
         uint256 _id,
         uint256 _stakingAmount
@@ -223,13 +264,16 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         userHasStakedERC1155[msg.sender] = true;    // Set true for user has staked
         userIsStakingERC1155[msg.sender] = true;    // Set true for user is staking
         
-        emit StakeTokens(
+        // Emit the event for staking ERC1155 tokens
+        emit StakeERC1155Tokens(
             msg.sender,
             address(this),
+            _id,
             _stakingAmount
         );
     }
 
+    // Function logic for unstaking ERC1155 tokens
     function _unstakeERC1155Tokens(
         uint256 _id
     ) private whenNotPaused {
@@ -254,6 +298,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         // Set the staking balance of the user to 0
         stakingBalanceERC1155[msg.sender][_id] = 0;
 
+        // Emit the event for unstaking ERC1155 tokens
         emit UnstakeERC1155Tokens(
             address(this),
             msg.sender,
