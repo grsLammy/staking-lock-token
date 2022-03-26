@@ -164,15 +164,9 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
             "cannot stake 0 ERC20 token"
         );
 
-        // Transfer the ERC20 mock tokens to the contract address for staking
-        ERC20(mockTokenERC20Address).transferFrom(
-            msg.sender,
-            address(this),
-            _stakingAmount
-        );
-
         // Update the staking balance of the user
         stakingBalanceERC20[msg.sender] += _stakingAmount;
+
 
         // Checks if the user account has previouslt staked
         // If the user has not ever staked then push the user account address to the stakers array
@@ -184,6 +178,13 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
 
         userIsStakingERC20[msg.sender] = true;   // Set true for user is staking
         userHasStakedERC20[msg.sender] = true;   // Set true for user has staked
+
+        // Transfer the ERC20 mock tokens to the contract address for staking
+        ERC20(mockTokenERC20Address).transferFrom(
+            msg.sender,
+            address(this),
+            _stakingAmount
+        );
 
         // Emit the event for staking ERC20 tokens
         emit StakeERC20Tokens(
@@ -204,16 +205,16 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
             "there is no token to unstake"
         );
 
+        // Set the staking balance of the user to 0
+        stakingBalanceERC20[msg.sender]= 0;
+        // Set false for user is staking
+        userIsStakingERC20[msg.sender] = false;
+
         // Transfers the tokens to unstake
         ERC20(mockTokenERC20Address).transfer(
             msg.sender,
             balance
         );
-
-        // Set the staking balance of the user to 0
-        stakingBalanceERC20[msg.sender]= 0;
-        // Set false for user is staking
-        userIsStakingERC20[msg.sender] = false;
 
         // Emit the event for unstaking ERC20 tokens
         emit UnstakeERC20Tokens(
@@ -240,16 +241,6 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
             "staking amount cannot be 0"
         );
 
-
-        // Transfer the ERC1155 mock tokens to the contract address for staking
-        ERC1155(mockTokenERC1155Address).safeTransferFrom(
-            msg.sender,
-            address(this),
-            _id,
-            _stakingAmount,
-            ""
-        );
-
         // Update the staking balance of the user
         stakingBalanceERC1155[msg.sender][_id] += _stakingAmount;
 
@@ -263,6 +254,15 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         
         userHasStakedERC1155[msg.sender] = true;    // Set true for user has staked
         userIsStakingERC1155[msg.sender] = true;    // Set true for user is staking
+
+        // Transfer the ERC1155 mock tokens to the contract address for staking
+        ERC1155(mockTokenERC1155Address).safeTransferFrom(
+            msg.sender,
+            address(this),
+            _id,
+            _stakingAmount,
+            ""
+        );
         
         // Emit the event for staking ERC1155 tokens
         emit StakeERC1155Tokens(
@@ -286,6 +286,9 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
             "there is no token to unstake"
         );
 
+        // Set the staking balance of the user to 0
+        stakingBalanceERC1155[msg.sender][_id] = 0;
+
         // Transfer the tokens to unstake
         ERC1155(mockTokenERC1155Address).safeTransferFrom(
             address(this),
@@ -294,9 +297,6 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
             balance,
             ""
         );
-
-        // Set the staking balance of the user to 0
-        stakingBalanceERC1155[msg.sender][_id] = 0;
 
         // Emit the event for unstaking ERC1155 tokens
         emit UnstakeERC1155Tokens(
