@@ -62,7 +62,7 @@ async function main() {
         await run("verify:verify", {
             address: stakingTokens.address,
             contract: "contracts/StakingTokens.sol:StakingTokens",
-            constructorArguments: [],
+            constructorArguments: [mockTokenERC20.address, mockTokenERC1155.address],
         });
     } catch (e:any) {
         console.error(`error in verifying: ${e.message}`);
