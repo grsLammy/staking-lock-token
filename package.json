@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "smart contract to stake and lock erc20 tokens and erc1155 nft tokens",
   "keywords": [],
-  "author": "Yash Mehta <ymehta777@gmail.com>",
+  "author": "Gulam Rasul Shah <grspro98@gmail.com>",
   "license": "MIT",
   
   "scripts": {
