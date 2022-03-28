@@ -157,7 +157,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
     // Function logic for staking ERC20 tokens
     function _stakeERC20Tokens(
         uint _stakingAmount
-    ) private {
+    ) internal {
         // Require statement to check if the staking amount is a valid amount
         require(
             _stakingAmount > 0,
@@ -168,7 +168,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         stakingBalanceERC20[msg.sender] += _stakingAmount;
 
 
-        // Checks if the user account has previouslt staked
+        // Checks if the user account has previously staked
         // If the user has not ever staked then push the user account address to the stakers array
         if(
             !userHasStakedERC20[msg.sender]
@@ -195,7 +195,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
     }
 
     // Function logic for unstaking ERC20 tokens
-    function _unstakeERC20Tokens() private {
+    function _unstakeERC20Tokens() internal {
         // Stores the token amount of user account to balance
         uint256 balance = stakingBalanceERC20[msg.sender];
 
@@ -228,7 +228,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
     function _stakeERC1155Tokens(
         uint256 _id,
         uint256 _stakingAmount
-    ) private {
+    ) internal {
         // Require statement to check if the token id is a valid id
         require(
             _id > 0,
@@ -244,7 +244,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
         // Update the staking balance of the user
         stakingBalanceERC1155[msg.sender][_id] += _stakingAmount;
 
-        // Checks if the user account has previouslt staked
+        // Checks if the user account has previously staked
         // If the user has not ever staked then push the user account address to the stakers array
         if(
             !userHasStakedERC20[msg.sender]
@@ -276,7 +276,7 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
     // Function logic for unstaking ERC1155 tokens
     function _unstakeERC1155Tokens(
         uint256 _id
-    ) private whenNotPaused {
+    ) internal whenNotPaused {
         // Stores the token amount of user accout to balance
         uint256 balance = stakingBalanceERC1155[msg.sender][_id];
 
