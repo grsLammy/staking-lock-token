@@ -3,12 +3,13 @@ pragma solidity 0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
+contract StakingTokens is Pausable, ReentrancyGuard, Ownable, ERC1155Holder {
 
     using Address for address;
 
@@ -138,18 +139,6 @@ contract StakingTokens is Pausable, ReentrancyGuard, Ownable {
     ) external whenNotPaused {
         // Function call
         _unstakeERC1155Tokens(_id);
-    }
-
-    // This function interface is called at the end of a 'safeTransferFrom'
-    // ERC1155TokenReciever interface to accept ERC1155 token transfers
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes calldata
-    ) public virtual returns (bytes4) {
-        return this.onERC1155Received.selector;
     }
 
     // FUNCTION IMPLEMENTATION
